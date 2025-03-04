@@ -11,7 +11,7 @@ I started by figuring out how to traverse directories recursively:
 - Then I recursively call `find` on any subdirectories I encounter
 
 For building the paths:
-- I concatinated the current directory path with each entry name (like `a/b` becomes `a/b/c` for entry `c`)
+- I linked the current directory path with each entry name (like `a/b` becomes `a/b/c` for entry `c`)
 - Used a 512 byte buffer for storing paths, which I think is enough for xv6's filesystem
 
 For name matching:
@@ -20,17 +20,15 @@ For name matching:
 
 ### Abandoned Approaches
 
-I initially tried an iterative approach with a stack to avoid recursion because I was worried about stack overflow, but honestly the recursive approach was so much cleaner and simpler. Since xv6 doesn't have huge directory structures anyway, I decided recursion was fine.
+I initially tried an different approach with a stack to avoid recursion because I was worried about stack overflow, but honestly the recursive approach was so much cleaner and simpler. Since xv6 doesn't have huge directory structures anyway, I decided recursion would be fine.
 
-I also thought about using dynamic buffers for the paths, but then remembered xv6 dosent have `malloc`/`free`. Fixed buffers just made more sense even if they're not as elegant.
-
-I didn't bother with symbolic links since they weren't mentioned in the requirements and would've added a lot more complexity.
+I also thought about using dynamic buffers for the paths, but then remembered xv6 dosent have `malloc` or `free`.
 
 ### Key Challenges
 
-Buffer overflow was a big worry - if paths got longer than 512 bytes, I just truncated them and added a warning message. I don't think this will be a problem in practice since xv6 rarely has super long paths.
+Buffer overflow was a big worry - if paths got longer than 512 bytes, I just shorten them and added a warning message. I don't think this will be a problem in practice since xv6 rarely has super long paths.
 
-I also had a nasty bug where I wasn't closing my directories properly after recursion... this took me a while to figure out! I had to add a bunch of `printf` statements to debug why I was running out of file descriptors.
+I also had a nasty bug where I wasn't closing my directories properly after recursion... this took me a while to figure out! I had to add a bunch of `printf` statements to debug why it was bugging out.
 
 ### 3.1. Partial Credit Considerations
 
@@ -57,7 +55,7 @@ I initially tried to implement the full Unix `xargs` behavior where it groups mu
 
 My first implementation used `read(0, buf, sizeof(buf))` to read entire chunks, but I ran into issues with partial inputs, especially when piping commands together. Switching to character-by-character reading was slower but more reliable.
 
-I thought about supporting quoted arguments (like `"hello world"`) but that seemed beyond what was needed.
+I thought about supporting quoted arguments (like `"hello world"`) but that seemed beyond what was required for.
 
 ### Key Challenges 
 
@@ -72,7 +70,7 @@ Handling edge cases like empty lines was tricky - I decided to just skip them ra
 
 
 There are defenitely tradeoffs:
-- Almost no error recovery (if `exec` fails, that's it)
+- Almost no error recovery (if `exec` fails, the whole thing's cooked)
 - No support for advanced filesystem features 
 
 I ran all the tests in the test suite and they passed, so I'm pretty confident the implementation meets the requirements despite some rough edges.
