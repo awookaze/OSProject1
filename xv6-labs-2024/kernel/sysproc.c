@@ -91,3 +91,19 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+//return the year of which
+//Unix version 6 was released
+uint64 sys_getyear(void) {
+  return 1975;
+} 
+
+uint64
+sys_trace(void)
+{
+    int mask;
+    argint(0, &mask);
+
+    myproc()->trace_mask = mask;
+    return 0;
+}
