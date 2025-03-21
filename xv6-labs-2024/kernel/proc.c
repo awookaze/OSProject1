@@ -322,6 +322,9 @@ fork(void)
   np->state = RUNNABLE;
   release(&np->lock);
 
+  np->trace_mask = p->trace_mask;  // Copy trace mask from parent to child
+
+
   return pid;
 }
 
