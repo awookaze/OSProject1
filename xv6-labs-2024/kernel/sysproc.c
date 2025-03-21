@@ -5,6 +5,8 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "kalloc.h"
+#include "sysinfo.h"
 
 uint64
 sys_exit(void)
@@ -92,18 +94,37 @@ sys_uptime(void)
   return xticks;
 }
 
-//return the year of which
-//Unix version 6 was released
-uint64 sys_getyear(void) {
+// return the year Unix Version 6 was released
+uint64
+sys_getyear(void) 
+{
   return 1975;
 } 
 
 uint64
 sys_trace(void)
 {
-    int mask;
-    argint(0, &mask);
+  int mask;
+  argint(0, &mask);
 
-    myproc()->trace_mask = mask;
-    return 0;
+  myproc()->trace_mask = mask;
+  return 0;
+}
+
+uint64
+sys_sysinfo(void)
+{
+  uint64 p;
+  struct sysinfo s;
+
+  argaddr(0, &p);
+
+  s.freemem = get_freemem();
+  s.nproc = count_active_procs();
+
+  // s.loadavg = compute_loadavg();
+
+  if(copyout(myproc()->pagetable, p, (char *)&s, sizeof(s)) < 0)
+    return -1;
+  return 0;
 }
