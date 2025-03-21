@@ -38,8 +38,8 @@ extern struct cpu cpus[NCPU];
 // the trapframe's kernel_*, restore user registers from the
 // trapframe, switch to the user page table, and enter user space.
 // the trapframe includes callee-saved user registers like s0-s11 because the
-// return-to-user path via usertrapret() doesn't return through
-// the entire kernel call stack.
+// return-to-user path via usertrapret() doesn't return through the
+// entire kernel call stack.
 struct trapframe {
   /*   0 */ uint64 kernel_satp;   // kernel page table
   /*   8 */ uint64 kernel_sp;     // top of process's kernel stack
@@ -106,5 +106,8 @@ struct proc {
   char name[16];               // Process name (debugging)
 
   int trace_mask; // The mask variable of the syscall monitored.
-
 };
+
+// Declaration of a helper function used in your sysinfo system call.
+// This function should return the number of processes whose state is not UNUSED.
+uint count_active_procs(void);
