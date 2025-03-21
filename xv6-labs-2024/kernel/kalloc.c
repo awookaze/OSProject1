@@ -1,7 +1,3 @@
-// Physical memory allocator, for user processes,
-// kernel stacks, page-table pages,
-// and pipe buffers. Allocates whole 4096-byte pages.
-
 #include "types.h"
 #include "param.h"
 #include "memlayout.h"
@@ -12,7 +8,7 @@
 void freerange(void *pa_start, void *pa_end);
 
 extern char end[]; // first address after kernel.
-                   // defined by kernel.ld.
+// defined by kernel.ld.
 
 struct run {
   struct run *next;
@@ -79,4 +75,19 @@ kalloc(void)
   if(r)
     memset((char*)r, 5, PGSIZE); // fill with junk
   return (void*)r;
+}
+
+
+uint
+get_freemem(void)
+{
+  uint total_free = 0;
+  struct run *r;
+  
+  acquire(&kmem.lock);
+  for(r = kmem.freelist; r; r = r->next)
+    total_free += PGSIZE;
+  release(&kmem.lock);
+  
+  return total_free;
 }
